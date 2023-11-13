@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Base64 Converter</title>
+    <link rel="stylesheet" type="text/css" href="C:/AI/container1/styles.css">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to bottom , #ECECEC, #FFFFFF);
+            background-image: url("https://i.stack.imgur.com/vhoa0.jpg");
+        }
+
+        h1 {
+            color: #cecece;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .custom-file-upload {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #base64Output {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>SeaAnimals Procrssing</h1>
+    <label for="imageInput" class="custom-file-upload">
+        Select Image
+    </label>
+    <input type="file" id="imageInput" accept="image/*">
+    <div id="base64Output">
+        <h3>ผลลัพธ์ที่ได้คือ</h3>
+    </div>
+    <div>
+        <img id="selectedImage" src="" style="max-width: 100%; max-height: 300px;">
+    </div>
+
+    <script>
+
+        document.getElementById('imageInput').addEventListener('change', handleImageSelect, false);
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            const selectedImage = document.getElementById('selectedImage');
+
+            reader.onload = function (e) {
+                
+                const base64String = e.target.result.split(',')[1];
+                document.getElementById('base64Output').innerText = base64String;
+                selectedImage.src = "data:image/jpeg;base64,"+base64String
+                
+
+                const base64Output = document.getElementById('base64Output');
+                base64Output.innerText = base64String;
+                
+                fetch("http://127.0.0.1:5000/api/getbase64", {
+                    method: "POST",
+                    body: JSON.stringify({ img: base64String }),
+                    headers: { "Content-type": "application/json; charset=UTF-8" }
+                })
+                .then((response) => response.json())
+                .then((json) => {
+                    const base64Output = document.getElementById('base64Output');
+                    base64Output.innerText = json.result; 
+
+                });
+
+
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        
+    </script>
+</body>
+</html>
